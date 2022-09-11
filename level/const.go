@@ -16,8 +16,10 @@
 
 package level
 
+type Level int
+
 const (
-	Off int = iota
+	Off Level = iota
 	Error
 	Warning
 	Info

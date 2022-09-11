@@ -25,7 +25,7 @@ import (
 	"testing"
 )
 
-func testParseLevel(t *testing.T, a int) {
+func testParseLevel(t *testing.T, a level.Level) {
 	if b, err := ParseLevel(levelStr[a]); err != nil || b != a {
 		t.Errorf("b = %d; want %d", b, a)
 	}
@@ -48,7 +48,7 @@ func TestGetLevel(t *testing.T) {
 	}
 }
 
-func testOutput(t *testing.T, lvl int, a string) {
+func testOutput(t *testing.T, lvl level.Level, a string) {
 	buf := new(bytes.Buffer)
 	l, _ := New(log.New(buf, "", 0), lvl)
 	l.Error(levelStr[level.Error])

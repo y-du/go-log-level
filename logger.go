@@ -24,12 +24,12 @@ import (
 )
 
 type Logger struct {
-	level  int
-	pLevel int
+	level  level.Level
+	pLevel level.Level
 	*log.Logger
 }
 
-func New(logger *log.Logger, level int) (*Logger, error) {
+func New(logger *log.Logger, level level.Level) (*Logger, error) {
 	if err := checkLevel(level); err != nil {
 		return nil, err
 	}
@@ -100,11 +100,11 @@ func (l *Logger) Debugln(v ...interface{}) {
 	l.output(level.Debug, fmt.Sprintln(v...))
 }
 
-func (l *Logger) GetLevel() int {
+func (l *Logger) GetLevel() level.Level {
 	return l.level
 }
 
-func (l *Logger) SetPrintLevel(level int) (err error) {
+func (l *Logger) SetPrintLevel(level level.Level) (err error) {
 	if err = checkLevel(level); err != nil {
 		return err
 	}
@@ -112,7 +112,7 @@ func (l *Logger) SetPrintLevel(level int) (err error) {
 	return
 }
 
-func (l *Logger) output(level int, v string) (err error) {
+func (l *Logger) output(level level.Level, v string) (err error) {
 	if level <= l.level {
 		return l.Output(3, v)
 	}
@@ -127,16 +127,16 @@ var levelStr = [5]string{
 	"debug",
 }
 
-func ParseLevel(v string) (int, error) {
+func ParseLevel(v string) (level.Level, error) {
 	for i := 0; i < len(levelStr); i++ {
 		if levelStr[i] == v {
-			return i, nil
+			return level.Level(i), nil
 		}
 	}
 	return level.Default, errors.New(fmt.Sprintf("unknown logging level '%s'", v))
 }
 
-func checkLevel(l int) error {
+func checkLevel(l level.Level) error {
 	if l >= level.Off && l <= level.Debug {
 		return nil
 	}
