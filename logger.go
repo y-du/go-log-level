@@ -103,7 +103,7 @@ func (l *Logger) output(level int, v string) (err error) {
 	return
 }
 
-var lvlStrings = [5]string{
+var levelStr = [5]string{
 	"off",
 	"error",
 	"warning",
@@ -112,8 +112,8 @@ var lvlStrings = [5]string{
 }
 
 func ParseLevel(v string) (int, error) {
-	for i := 0; i < len(lvlStrings); i++ {
-		if lvlStrings[i] == v {
+	for i := 0; i < len(levelStr); i++ {
+		if levelStr[i] == v {
 			return i, nil
 		}
 	}
