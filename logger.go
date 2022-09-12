@@ -119,23 +119,6 @@ func (l *Logger) output(level level.Level, v string) (err error) {
 	return
 }
 
-var levelStr = [5]string{
-	"off",
-	"error",
-	"warning",
-	"info",
-	"debug",
-}
-
-func ParseLevel(v string) (level.Level, error) {
-	for i := 0; i < len(levelStr); i++ {
-		if levelStr[i] == v {
-			return level.Level(i), nil
-		}
-	}
-	return level.Default, errors.New(fmt.Sprintf("unknown logging level '%s'", v))
-}
-
 func checkLevel(l level.Level) error {
 	if l >= level.Off && l <= level.Debug {
 		return nil

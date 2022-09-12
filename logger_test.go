@@ -26,7 +26,7 @@ import (
 )
 
 func testParseLevel(t *testing.T, a level.Level) {
-	if b, err := ParseLevel(levelStr[a]); err != nil || b != a {
+	if b, err := level.Parse(a.String()); err != nil || b != a {
 		t.Errorf("b = %d; want %d", b, a)
 	}
 }
@@ -51,10 +51,10 @@ func TestGetLevel(t *testing.T) {
 func testOutput(t *testing.T, lvl level.Level, a string) {
 	buf := new(bytes.Buffer)
 	l, _ := New(log.New(buf, "", 0), lvl)
-	l.Error(levelStr[level.Error])
-	l.Warning(levelStr[level.Warning])
-	l.Info(levelStr[level.Info])
-	l.Debug(levelStr[level.Debug])
+	l.Error(level.Error)
+	l.Warning(level.Warning)
+	l.Info(level.Info)
+	l.Debug(level.Debug)
 	b := strings.ReplaceAll(buf.String(), "\n", "")
 	if b != a {
 		t.Errorf("b = %s; want %s", b, a)
@@ -66,19 +66,19 @@ func TestOff(t *testing.T) {
 }
 
 func TestError(t *testing.T) {
-	testOutput(t, level.Error, levelStr[level.Error])
+	testOutput(t, level.Error, level.Error.String())
 }
 
 func TestWarning(t *testing.T) {
-	testOutput(t, level.Warning, fmt.Sprint(levelStr[level.Error], levelStr[level.Warning]))
+	testOutput(t, level.Warning, fmt.Sprint(level.Error.String(), level.Warning.String()))
 }
 
 func TestInfo(t *testing.T) {
-	testOutput(t, level.Info, fmt.Sprint(levelStr[level.Error], levelStr[level.Warning], levelStr[level.Info]))
+	testOutput(t, level.Info, fmt.Sprint(level.Error.String(), level.Warning.String(), level.Info.String()))
 }
 
 func TestDebug(t *testing.T) {
-	testOutput(t, level.Debug, fmt.Sprint(levelStr[level.Error], levelStr[level.Warning], levelStr[level.Info], levelStr[level.Debug]))
+	testOutput(t, level.Debug, fmt.Sprint(level.Error.String(), level.Warning.String(), level.Info.String(), level.Debug.String()))
 }
 
 func TestSetPrintLevel(t *testing.T) {

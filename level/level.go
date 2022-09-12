@@ -16,7 +16,13 @@
 
 package level
 
-type Level int
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+)
+
+type Level int8
 
 const (
 	Off Level = iota
@@ -26,3 +32,33 @@ const (
 	Debug
 	Default = Warning
 )
+
+var levelStr = [5]string{
+	"off",
+	"error",
+	"warning",
+	"info",
+	"debug",
+}
+
+func (l Level) String() string {
+	return levelStr[l]
+}
+
+func (l *Level) UnmarshalJSON(data []byte) (err error) {
+	var itf interface{}
+	if err = json.Unmarshal(data, &itf); err != nil {
+		return
+	}
+	*l, err = Parse(itf.(string))
+	return
+}
+
+func Parse(v string) (Level, error) {
+	for i := 0; i < len(levelStr); i++ {
+		if levelStr[i] == v {
+			return Level(i), nil
+		}
+	}
+	return Default, errors.New(fmt.Sprintf("unknown logging level '%s'", v))
+}
