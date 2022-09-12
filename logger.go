@@ -29,15 +29,17 @@ type Logger struct {
 	*log.Logger
 }
 
-func New(logger *log.Logger, level level.Level) (*Logger, error) {
-	if err := checkLevel(level); err != nil {
-		return nil, err
+func New(logLogger *log.Logger, loggerLevel level.Level) (l *Logger, err error) {
+	if ok := checkLevel(loggerLevel); !ok {
+		err = errors.New(fmt.Sprintf("unknown level '%d': defaulting to '%s'", loggerLevel, level.Default))
+		loggerLevel = level.Default
 	}
-	return &Logger{
-		level:  level,
+	l = &Logger{
+		level:  loggerLevel,
 		pLevel: -1,
-		Logger: logger,
-	}, nil
+		Logger: logLogger,
+	}
+	return
 }
 
 func (l *Logger) Printf(format string, v ...interface{}) {
