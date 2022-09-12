@@ -60,5 +60,5 @@ func Parse(v string) (Level, error) {
 			return Level(i), nil
 		}
 	}
-	return Default, errors.New(fmt.Sprintf("unknown logging level '%s'", v))
+	return Default, errors.New(fmt.Sprintf("unknown level '%s': returning default '%s'", v, Default))
 }
