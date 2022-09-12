@@ -105,8 +105,8 @@ func (l *Logger) GetLevel() level.Level {
 }
 
 func (l *Logger) SetPrintLevel(level level.Level) (err error) {
-	if err = checkLevel(level); err != nil {
-		return err
+	if ok := checkLevel(level); !ok {
+		return errors.New(fmt.Sprintf("unknown level '%d'", level))
 	}
 	l.pLevel = level
 	return
@@ -119,9 +119,9 @@ func (l *Logger) output(level level.Level, v string) (err error) {
 	return
 }
 
-func checkLevel(l level.Level) error {
+func checkLevel(l level.Level) bool {
 	if l >= level.Off && l <= level.Debug {
-		return nil
+		return true
 	}
-	return errors.New(fmt.Sprintf("unknown logging level '%d'", l))
+	return false
 }
