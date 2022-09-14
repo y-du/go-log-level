@@ -45,12 +45,16 @@ func (l Level) String() string {
 	return levelStr[l]
 }
 
+func (l Level) MarshalJSON() ([]byte, error) {
+	return json.Marshal(levelStr[l])
+}
+
 func (l *Level) UnmarshalJSON(data []byte) (err error) {
-	var itf interface{}
-	if err = json.Unmarshal(data, &itf); err != nil {
+	var v string
+	if err = json.Unmarshal(data, &v); err != nil {
 		return
 	}
-	*l, err = Parse(itf.(string))
+	*l, err = Parse(v)
 	return
 }
 
