@@ -81,6 +81,21 @@ func TestDebug(t *testing.T) {
 	testOutput(t, level.Debug, fmt.Sprint(level.Error.String(), level.Warning.String(), level.Info.String(), level.Debug.String()))
 }
 
+func TestLevelPrefix(t *testing.T) {
+	buf := new(bytes.Buffer)
+	l, _ := New(log.New(buf, "", 0), level.Debug)
+	l.SetLevelPrefix("e ", "w ", "i ", "d ")
+	l.Error(level.Error)
+	l.Warning(level.Warning)
+	l.Info(level.Info)
+	l.Debug(level.Debug)
+	a := fmt.Sprint("e ", level.Error.String(), "w ", level.Warning.String(), "i ", level.Info.String(), "d ", level.Debug.String())
+	b := strings.ReplaceAll(buf.String(), "\n", "")
+	if b != a {
+		t.Errorf("b = %s; want %s", b, a)
+	}
+}
+
 func TestSetPrintLevel(t *testing.T) {
 	buf := new(bytes.Buffer)
 	l, _ := New(log.New(buf, "", 0), level.Error)
