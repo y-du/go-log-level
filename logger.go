@@ -17,21 +17,24 @@
 package log_level
 
 import (
-	"errors"
 	"fmt"
 	"github.com/y-du/go-log-level/level"
 	"log"
 )
 
 type Logger struct {
-	level  level.Level
-	pLevel level.Level
+	level   level.Level
+	pLevel  level.Level
+	ePrefix string
+	wPrefix string
+	iPrefix string
+	dPrefix string
 	*log.Logger
 }
 
 func New(logLogger *log.Logger, loggerLevel level.Level) (l *Logger, err error) {
 	if ok := checkLevel(loggerLevel); !ok {
-		err = errors.New(fmt.Sprintf("unknown level '%d': defaulting to '%s'", loggerLevel, level.Default))
+		err = fmt.Errorf("unknown level '%d': defaulting to '%s'", loggerLevel, level.Default)
 		loggerLevel = level.Default
 	}
 	l = &Logger{
@@ -42,64 +45,77 @@ func New(logLogger *log.Logger, loggerLevel level.Level) (l *Logger, err error) 
 	return
 }
 
+func (l *Logger) SetLevelPrefix(error, warning, info, debug string) {
+	l.ePrefix = error
+	l.wPrefix = warning
+	l.iPrefix = info
+	l.dPrefix = debug
+}
+
 func (l *Logger) Printf(format string, v ...interface{}) {
-	l.output(l.pLevel, fmt.Sprintf(format, v...))
+	if l.pLevel <= l.level {
+		l.Output(3, fmt.Sprintf(format, v...))
+	}
 }
 
 func (l *Logger) Print(v ...interface{}) {
-	l.output(l.pLevel, fmt.Sprint(v...))
+	if l.pLevel <= l.level {
+		l.Output(3, fmt.Sprint(v...))
+	}
 }
 
 func (l *Logger) Println(v ...interface{}) {
-	l.output(l.pLevel, fmt.Sprintln(v...))
+	if l.pLevel <= l.level {
+		l.Output(3, fmt.Sprint(v...))
+	}
 }
 
 func (l *Logger) Error(v ...interface{}) {
-	l.output(level.Error, fmt.Sprint(v...))
+	if level.Error <= l.level {
+		l.Output(3, l.ePrefix+fmt.Sprint(v...))
+	}
 }
 
 func (l *Logger) Errorf(format string, v ...interface{}) {
-	l.output(level.Error, fmt.Sprintf(format, v...))
-}
-
-func (l *Logger) Errorln(v ...interface{}) {
-	l.output(level.Error, fmt.Sprintln(v...))
+	if level.Error <= l.level {
+		l.Output(3, l.ePrefix+fmt.Sprintf(format, v...))
+	}
 }
 
 func (l *Logger) Warning(v ...interface{}) {
-	l.output(level.Warning, fmt.Sprint(v...))
+	if level.Warning <= l.level {
+		l.Output(3, l.wPrefix+fmt.Sprint(v...))
+	}
 }
 
 func (l *Logger) Warningf(format string, v ...interface{}) {
-	l.output(level.Warning, fmt.Sprintf(format, v...))
-}
-
-func (l *Logger) Warningln(v ...interface{}) {
-	l.output(level.Warning, fmt.Sprintln(v...))
+	if level.Warning <= l.level {
+		l.Output(3, l.wPrefix+fmt.Sprintf(format, v...))
+	}
 }
 
 func (l *Logger) Info(v ...interface{}) {
-	l.output(level.Info, fmt.Sprint(v...))
+	if level.Info <= l.level {
+		l.Output(3, l.iPrefix+fmt.Sprint(v...))
+	}
 }
 
 func (l *Logger) Infof(format string, v ...interface{}) {
-	l.output(level.Info, fmt.Sprintf(format, v...))
-}
-
-func (l *Logger) Infoln(v ...interface{}) {
-	l.output(level.Info, fmt.Sprintln(v...))
+	if level.Info <= l.level {
+		l.Output(3, l.iPrefix+fmt.Sprintf(format, v...))
+	}
 }
 
 func (l *Logger) Debug(v ...interface{}) {
-	l.output(level.Debug, fmt.Sprint(v...))
+	if level.Debug <= l.level {
+		l.Output(3, l.dPrefix+fmt.Sprint(v...))
+	}
 }
 
 func (l *Logger) Debugf(format string, v ...interface{}) {
-	l.output(level.Debug, fmt.Sprintf(format, v...))
-}
-
-func (l *Logger) Debugln(v ...interface{}) {
-	l.output(level.Debug, fmt.Sprintln(v...))
+	if level.Debug <= l.level {
+		l.Output(3, l.dPrefix+fmt.Sprintf(format, v...))
+	}
 }
 
 func (l *Logger) GetLevel() level.Level {
@@ -108,16 +124,9 @@ func (l *Logger) GetLevel() level.Level {
 
 func (l *Logger) SetPrintLevel(level level.Level) (err error) {
 	if ok := checkLevel(level); !ok {
-		return errors.New(fmt.Sprintf("unknown level '%d'", level))
+		return fmt.Errorf("unknown level '%d'", level)
 	}
 	l.pLevel = level
-	return
-}
-
-func (l *Logger) output(level level.Level, v string) (err error) {
-	if level <= l.level {
-		return l.Output(3, v)
-	}
 	return
 }
 
