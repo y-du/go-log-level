@@ -18,7 +18,6 @@ package level
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -64,5 +63,5 @@ func Parse(v string) (Level, error) {
 			return Level(i), nil
 		}
 	}
-	return Default, errors.New(fmt.Sprintf("unknown level '%s': returning default '%s'", v, Default))
+	return Default, fmt.Errorf("unknown level '%s': returning default '%s'", v, Default)
 }
